@@ -1,0 +1,2911 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PRIX8 — VFX / CGI / Creative Technology</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --white:#ffffff;
+      --paper:#fafcff;
+      --blue:#315cff;
+      --sky:#42c8ff;
+      --pink:#ffb8d9;
+      --pink-strong:#ff8fc4;
+      --lavender:#b9a7ff;
+      --navy:#10152b;
+      --ink:#171a27;
+      --muted:#727887;
+      --line:#dfe6f0;
+      --soft-blue:#eef7ff;
+      --soft-pink:#fff1f8;
+
+      --header:82px;
+      --side:clamp(22px,7vw,120px);
+      --max:1440px;
+      --ease:cubic-bezier(.2,.8,.2,1);
+    }
+
+    *{
+      box-sizing:border-box;
+      margin:0;
+      padding:0;
+    }
+
+    html{
+      scroll-behavior:smooth;
+    }
+
+    body{
+      background:var(--paper);
+      color:var(--ink);
+      font-family:"Manrope",sans-serif;
+      overflow-x:hidden;
+    }
+
+    a{
+      color:inherit;
+      text-decoration:none;
+    }
+
+    button{
+      font:inherit;
+    }
+
+    ::selection{
+      background:var(--blue);
+      color:#fff;
+    }
+
+/* Hide floating story board on mobile */ @media (max-width: 800px){ .story-widget, .story-reopen{ display:none !important; } }
+
+    /* =========================
+       HEADER
+    ========================= */
+
+    header{
+      position:fixed;
+      top:0;
+      left:0;
+      right:0;
+      height:var(--header);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding:0 var(--side);
+      z-index:5000;
+      background:rgba(250,252,255,.78);
+      backdrop-filter:blur(18px);
+      -webkit-backdrop-filter:blur(18px);
+      border-bottom:1px solid rgba(223,230,240,.75);
+    }
+
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:11px;
+      min-width:max-content;
+    }
+
+    .brand-mark{
+      width:45px;
+      height:36px;
+      overflow:visible;
+      transition:
+        transform .55s var(--ease),
+        filter .55s var(--ease);
+    }
+
+    .brand:hover .brand-mark{
+      transform:rotate(-5deg) scale(1.07);
+      filter:drop-shadow(0 7px 18px rgba(49,92,255,.28));
+    }
+
+    .brand-word{
+      font-size:18px;
+      line-height:1;
+      font-weight:800;
+      letter-spacing:-.055em;
+    }
+
+    .brand-eight{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      width:21px;
+      height:21px;
+      margin-left:-6px;
+      border:1.5px solid var(--blue);
+      border-radius:50%;
+      font-size:11px;
+      font-weight:800;
+      color:var(--blue);
+      transform:rotate(12deg);
+      transition:.4s var(--ease);
+    }
+
+    .brand:hover .brand-eight{
+      background:var(--blue);
+      color:#fff;
+      transform:rotate(-8deg) scale(1.08);
+    }
+
+    nav{
+      display:flex;
+      align-items:center;
+      gap:34px;
+      font-family:"DM Mono",monospace;
+      font-size:11px;
+      text-transform:uppercase;
+      letter-spacing:.08em;
+    }
+
+    nav a{
+      position:relative;
+      padding:8px 0;
+      color:#4c5365;
+    }
+
+    nav a::after{
+      content:"";
+      position:absolute;
+      left:0;
+      bottom:1px;
+      width:0;
+      height:1px;
+      background:var(--blue);
+      transition:width .35s var(--ease);
+    }
+
+    nav a:hover{
+      color:var(--blue);
+    }
+
+    nav a:hover::after{
+      width:100%;
+    }
+
+    .nav-cta{
+      padding:11px 17px !important;
+      border:1px solid var(--ink);
+      border-radius:100px;
+      color:var(--ink) !important;
+      transition:
+        background .35s var(--ease),
+        color .35s var(--ease),
+        transform .35s var(--ease);
+    }
+
+    .nav-cta::after{
+      display:none;
+    }
+
+    .nav-cta:hover{
+      background:var(--ink);
+      color:#fff !important;
+      transform:translateY(-2px);
+    }
+
+    /* =========================
+       GLOBAL
+    ========================= */
+
+    section{
+      position:relative;
+      isolation:isolate;
+    }
+
+    .container{
+      width:min(calc(100% - 2 * var(--side)),var(--max));
+      margin:auto;
+    }
+
+    .eyebrow{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      font-family:"DM Mono",monospace;
+      font-size:10px;
+      text-transform:uppercase;
+      letter-spacing:.13em;
+      color:#697084;
+    }
+
+    .eyebrow::before{
+      content:"";
+      width:25px;
+      height:1px;
+      background:var(--blue);
+    }
+
+    .reveal{
+      opacity:0;
+      transform:translateY(35px);
+      transition:
+        opacity .9s var(--ease),
+        transform .9s var(--ease);
+    }
+
+    .reveal.visible{
+      opacity:1;
+      transform:none;
+    }
+
+    /* =========================
+       HERO
+    ========================= */
+
+    .hero{
+      min-height:100svh;
+      padding-top:calc(var(--header) + 80px);
+      display:flex;
+      align-items:center;
+      overflow:hidden;
+      background:
+        radial-gradient(
+          circle at 80% 35%,
+          rgba(66,200,255,.12),
+          transparent 27%
+        ),
+        radial-gradient(
+          circle at 70% 70%,
+          rgba(185,167,255,.12),
+          transparent 25%
+        ),
+        var(--paper);
+    }
+
+    .hero-inner{
+      position:relative;
+      width:min(calc(100% - 2 * var(--side)),var(--max));
+      margin:auto;
+      padding-bottom:80px;
+    }
+
+    .hero-copy{
+      position:relative;
+      z-index:3;
+      max-width:1120px;
+    }
+
+    .hero h1{
+      margin-top:24px;
+      font-size:clamp(60px,9.6vw,155px);
+      line-height:.82;
+      letter-spacing:-.075em;
+      font-weight:800;
+      max-width:1200px;
+    }
+
+    .hero h1 span{
+      display:block;
+    }
+
+    .hero h1 .gradient-word{
+      background:
+        linear-gradient(
+          100deg,
+          var(--blue),
+          var(--sky),
+          var(--lavender),
+          var(--pink-strong)
+        );
+      background-size:300% 100%;
+      -webkit-background-clip:text;
+      background-clip:text;
+      color:transparent;
+      animation:gradientMove 8s ease infinite;
+    }
+
+    @keyframes gradientMove{
+      0%,100%{background-position:0% 50%}
+      50%{background-position:100% 50%}
+    }
+
+    .hero-bottom{
+      margin-top:55px;
+      display:flex;
+      align-items:flex-end;
+      justify-content:space-between;
+      gap:30px;
+      max-width:980px;
+    }
+
+    .hero-description{
+      max-width:420px;
+      color:var(--muted);
+      font-size:15px;
+      line-height:1.8;
+    }
+
+    .hero-scroll{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      font-family:"DM Mono",monospace;
+      font-size:10px;
+      letter-spacing:.1em;
+      text-transform:uppercase;
+      color:#697084;
+    }
+
+    .scroll-line{
+      width:50px;
+      height:1px;
+      background:var(--blue);
+    }
+
+    .hero-orb{
+      position:absolute;
+      width:min(40vw,520px);
+      aspect-ratio:1;
+      right:-3vw;
+      top:50%;
+      transform:translateY(-44%);
+      border-radius:50%;
+      pointer-events:none;
+      z-index:1;
+      background:
+        radial-gradient(
+          circle at 35% 30%,
+          rgba(255,255,255,.95),
+          rgba(66,200,255,.48) 18%,
+          rgba(49,92,255,.4) 42%,
+          rgba(185,167,255,.3) 62%,
+          rgba(255,184,217,.18) 75%,
+          transparent 76%
+        );
+      filter:blur(1px);
+      animation:orbFloat 8s ease-in-out infinite;
+    }
+
+    .hero-orb::before,
+    .hero-orb::after{
+      content:"";
+      position:absolute;
+      inset:-14%;
+      border:1px solid rgba(49,92,255,.14);
+      border-radius:50%;
+      transform:rotate(30deg) scaleX(.7);
+    }
+
+    .hero-orb::after{
+      inset:-4%;
+      border-color:rgba(255,143,196,.18);
+      transform:rotate(-45deg) scaleX(.72);
+    }
+
+    @keyframes orbFloat{
+      0%,100%{
+        transform:translateY(-44%) rotate(0deg) scale(1);
+      }
+      50%{
+        transform:translateY(-48%) rotate(8deg) scale(1.04);
+      }
+    }
+
+    /* =========================
+       THOUGHT
+    ========================= */
+
+    .thought{
+      padding:170px 0;
+      background:#fff;
+    }
+
+    .thought-inner{
+      width:min(calc(100% - 2 * var(--side)),950px);
+      margin:auto;
+    }
+
+    .thought-text{
+      margin-top:35px;
+      font-size:clamp(42px,6.5vw,95px);
+      line-height:.98;
+      letter-spacing:-.06em;
+      font-weight:700;
+      max-width:900px;
+    }
+
+    .thought-text em{
+      font-style:normal;
+      color:var(--blue);
+    }
+
+    /* =========================
+       MANIFESTO
+    ========================= */
+
+    .manifesto{
+      padding:145px 0;
+      background:var(--navy);
+      color:#fff;
+      overflow:hidden;
+    }
+
+    .manifesto-grid{
+      width:min(calc(100% - 2 * var(--side)),var(--max));
+      margin:auto;
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:100px;
+    }
+
+    .manifesto-label{
+      color:rgba(255,255,255,.48);
+    }
+
+    .manifesto-label::before{
+      background:var(--sky);
+    }
+
+    .manifesto-list{
+      display:flex;
+      flex-direction:column;
+      gap:55px;
+    }
+
+    .manifesto-item{
+      padding-bottom:50px;
+      border-bottom:1px solid rgba(255,255,255,.12);
+    }
+
+    .manifesto-number{
+      font-family:"DM Mono",monospace;
+      font-size:10px;
+      color:var(--sky);
+      margin-bottom:18px;
+    }
+
+    .manifesto-item h3{
+      font-size:clamp(28px,3.2vw,48px);
+      line-height:1.06;
+      letter-spacing:-.045em;
+      font-weight:600;
+      max-width:700px;
+    }
+
+    /* =========================
+       SHOWREEL
+    ========================= */
+
+    .showreel{
+      padding:130px 0;
+      background:#fff;
+    }
+
+    .showreel-frame{
+      position:relative;
+      min-height:620px;
+      overflow:hidden;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background:
+        radial-gradient(
+          circle at 50% 50%,
+          rgba(66,200,255,.18),
+          transparent 28%
+        ),
+        conic-gradient(
+          from 0deg at 50% 50%,
+          #111a42,
+          #1d1647,
+          #101c3c,
+          #27173c,
+          #111a42
+        );
+      border-radius:4px;
+    }
+
+    .showreel-frame::before{
+      content:"";
+      position:absolute;
+      width:70%;
+      aspect-ratio:1;
+      border:1px solid rgba(255,255,255,.15);
+      border-radius:50%;
+      animation:spin 20s linear infinite;
+    }
+
+    .showreel-frame::after{
+      content:"";
+      position:absolute;
+      width:45%;
+      aspect-ratio:1;
+      border:1px solid rgba(66,200,255,.25);
+      border-radius:50%;
+      animation:spinReverse 14s linear infinite;
+    }
+
+    @keyframes spin{
+      to{transform:rotate(360deg)}
+    }
+
+    @keyframes spinReverse{
+      to{transform:rotate(-360deg)}
+    }
+
+    .reel-core{
+      position:relative;
+      z-index:2;
+      width:120px;
+      height:120px;
+      border-radius:50%;
+      border:1px solid rgba(255,255,255,.45);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      color:#fff;
+      background:rgba(255,255,255,.06);
+      backdrop-filter:blur(12px);
+      cursor:pointer;
+      transition:
+        transform .5s var(--ease),
+        background .5s var(--ease);
+    }
+
+    .reel-core:hover{
+      transform:scale(1.08);
+      background:rgba(255,255,255,.13);
+    }
+
+    .play-icon{
+      width:0;
+      height:0;
+      border-top:11px solid transparent;
+      border-bottom:11px solid transparent;
+      border-left:17px solid #fff;
+      margin-left:5px;
+    }
+
+    .reel-label{
+      position:absolute;
+      left:35px;
+      bottom:30px;
+      color:rgba(255,255,255,.6);
+      font-family:"DM Mono",monospace;
+      font-size:10px;
+      letter-spacing:.1em;
+      text-transform:uppercase;
+    }
+
+    .reel-time{
+      position:absolute;
+      right:35px;
+      bottom:30px;
+      color:rgba(255,255,255,.6);
+      font-family:"DM Mono",monospace;
+      font-size:10px;
+    }
+
+    /* =========================
+       WORK
+    ========================= */
+
+    .work{
+      padding:160px 0;
+      background:var(--paper);
+    }
+
+    .section-head{
+      display:flex;
+      align-items:flex-end;
+      justify-content:space-between;
+      gap:30px;
+      margin-bottom:75px;
+    }
+
+    .section-title{
+      font-size:clamp(60px,8vw,120px);
+      line-height:.82;
+      letter-spacing:-.07em;
+      font-weight:800;
+    }
+
+    .section-note{
+      max-width:300px;
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.7;
+    }
+
+    .work-grid{
+      display:grid;
+      grid-template-columns:1.25fr .75fr;
+      gap:25px;
+    }
+
+    .work-card{
+      position:relative;
+      min-height:520px;
+      overflow:hidden;
+      cursor:pointer;
+      background:#111;
+      transform:translateZ(0);
+      transition:transform .6s var(--ease);
+    }
+
+    .work-card:nth-child(2){
+      transform:translateY(100px);
+    }
+
+    .work-card:nth-child(3){
+      transform:translateY(-10px);
+    }
+
+    .work-card:nth-child(4){
+      transform:translateY(90px);
+    }
+
+    .work-card:hover{
+      transform:translateY(-8px);
+    }
+
+    .work-card:nth-child(2):hover{
+      transform:translateY(90px);
+    }
+
+    .work-card:nth-child(4):hover{
+      transform:translateY(80px);
+    }
+
+    .work-visual{
+      position:absolute;
+      inset:0;
+      transition:transform 1s var(--ease);
+    }
+
+    .work-card:hover .work-visual{
+      transform:scale(1.06);
+    }
+
+    .nebula{
+      background:
+        radial-gradient(
+          circle at 35% 35%,
+          rgba(66,200,255,.85),
+          transparent 13%
+        ),
+        radial-gradient(
+          circle at 62% 60%,
+          rgba(185,167,255,.8),
+          transparent 22%
+        ),
+        radial-gradient(
+          circle at 50% 50%,
+          #2439a0,
+          #090c1d 60%
+        );
+    }
+
+    .nebula::before{
+      content:"";
+      position:absolute;
+      width:70%;
+      height:70%;
+      left:15%;
+      top:15%;
+      border-radius:50%;
+      border:1px solid rgba(255,255,255,.3);
+      box-shadow:
+        0 0 80px rgba(66,200,255,.35),
+        inset 0 0 80px rgba(185,167,255,.18);
+      transform:rotate(35deg) scaleX(.65);
+    }
+
+    .flux{
+      background:
+        linear-gradient(
+          130deg,
+          #ffb8d9,
+          #ff8fc4 28%,
+          #7568ff 65%,
+          #315cff
+        );
+    }
+
+    .flux::before,
+    .flux::after{
+      content:"";
+      position:absolute;
+      width:130%;
+      height:55%;
+      left:-15%;
+      top:24%;
+      border-radius:50%;
+      border:2px solid rgba(255,255,255,.5);
+      transform:rotate(-18deg);
+    }
+
+    .flux::after{
+      transform:rotate(18deg) scaleY(.7);
+      opacity:.6;
+    }
+
+    .dreamstate{
+      background:
+        radial-gradient(
+          circle at 50% 40%,
+          rgba(255,255,255,.65),
+          transparent 5%
+        ),
+        linear-gradient(
+          145deg,
+          #c9d6ff,
+          #8074ff 40%,
+          #1d255d 100%
+        );
+    }
+
+    .dreamstate::before{
+      content:"";
+      position:absolute;
+      width:65%;
+      aspect-ratio:1;
+      left:18%;
+      top:17%;
+      border-radius:50%;
+      background:
+        radial-gradient(
+          circle at 30% 30%,
+          rgba(255,255,255,.95),
+          rgba(255,255,255,.08) 20%,
+          transparent 42%
+        );
+      box-shadow:0 25px 80px rgba(49,92,255,.35);
+    }
+
+    .zero{
+      background:
+        radial-gradient(
+          ellipse at center,
+          #273f92 0,
+          #12182f 45%,
+          #090b14 80%
+        );
+    }
+
+    .zero::before{
+      content:"0";
+      position:absolute;
+      inset:0;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      color:transparent;
+      -webkit-text-stroke:1px rgba(255,255,255,.55);
+      font-size:360px;
+      font-weight:800;
+      line-height:1;
+    }
+
+    .work-overlay{
+      position:absolute;
+      inset:auto 0 0 0;
+      padding:28px;
+      z-index:3;
+      color:#fff;
+      background:linear-gradient(
+        to top,
+        rgba(0,0,0,.58),
+        transparent
+      );
+    }
+
+    .work-meta{
+      font-family:"DM Mono",monospace;
+      font-size:9px;
+      letter-spacing:.1em;
+      text-transform:uppercase;
+      opacity:.7;
+      margin-bottom:8px;
+    }
+
+    .work-title{
+      font-size:clamp(25px,3vw,43px);
+      font-weight:700;
+      letter-spacing:-.045em;
+    }
+
+    /* =========================
+       CAPABILITIES
+    ========================= */
+
+    .capabilities{
+      padding:160px 0;
+      background:#fff;
+    }
+
+    .cap-grid{
+      margin-top:80px;
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      border-top:1px solid var(--line);
+      border-left:1px solid var(--line);
+    }
+
+    .cap{
+      min-height:260px;
+      padding:30px;
+      border-right:1px solid var(--line);
+      border-bottom:1px solid var(--line);
+      transition:
+        background .4s var(--ease),
+        transform .4s var(--ease);
+    }
+
+    .cap:hover{
+      background:var(--soft-blue);
+      transform:translateY(-3px);
+    }
+
+    .cap-number{
+      font-family:"DM Mono",monospace;
+      font-size:10px;
+      color:var(--blue);
+    }
+
+    .cap h3{
+      margin-top:85px;
+      font-size:27px;
+      letter-spacing:-.045em;
+    }
+
+    .cap p{
+      margin-top:10px;
+      max-width:300px;
+      color:var(--muted);
+      font-size:12px;
+      line-height:1.7;
+    }
+
+    /* =========================
+       PAUSE
+    ========================= */
+
+    .pause{
+      min-height:80vh;
+      display:flex;
+      align-items:center;
+      background:
+        radial-gradient(
+          circle at 70% 40%,
+          rgba(185,167,255,.35),
+          transparent 30%
+        ),
+        linear-gradient(
+          135deg,
+          #fff,
+          #eef7ff
+        );
+    }
+
+    .pause-text{
+      max-width:1050px;
+      font-size:clamp(48px,7vw,105px);
+      line-height:.94;
+      letter-spacing:-.07em;
+      font-weight:700;
+    }
+
+    .pause-text span{
+      color:var(--blue);
+    }
+
+    /* =========================
+       LAB
+    ========================= */
+
+    .lab{
+      padding:160px 0;
+      background:var(--navy);
+      color:#fff;
+    }
+
+    .lab .eyebrow{
+      color:rgba(255,255,255,.5);
+    }
+
+    .lab .eyebrow::before{
+      background:var(--sky);
+    }
+
+    .lab-grid{
+      margin-top:80px;
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:12px;
+    }
+
+    .lab-card{
+      position:relative;
+      min-height:370px;
+      padding:28px;
+      overflow:hidden;
+      border:1px solid rgba(255,255,255,.1);
+      background:rgba(255,255,255,.025);
+      transition:
+        border-color .5s var(--ease),
+        transform .5s var(--ease);
+    }
+
+    .lab-card:hover{
+      transform:translateY(-7px);
+      border-color:rgba(66,200,255,.45);
+    }
+
+    .lab-index{
+      font-family:"DM Mono",monospace;
+      color:var(--sky);
+      font-size:10px;
+    }
+
+    .lab-card h3{
+      position:absolute;
+      left:28px;
+      bottom:30px;
+      font-size:26px;
+      letter-spacing:-.045em;
+    }
+
+    .lab-orb{
+      position:absolute;
+      width:180px;
+      height:180px;
+      top:70px;
+      left:50%;
+      transform:translateX(-50%);
+      border-radius:50%;
+      background:
+        radial-gradient(
+          circle at 35% 30%,
+          #fff,
+          var(--sky) 10%,
+          var(--blue) 35%,
+          var(--lavender) 62%,
+          transparent 70%
+        );
+      filter:blur(.2px);
+      opacity:.75;
+      animation:labFloat 6s ease-in-out infinite;
+    }
+
+    .lab-card:nth-child(2) .lab-orb{
+      border-radius:40% 60% 55% 45%;
+      background:
+        linear-gradient(
+          135deg,
+          var(--pink),
+          var(--pink-strong),
+          var(--lavender)
+        );
+      filter:blur(8px);
+    }
+
+    .lab-card:nth-child(3) .lab-orb{
+      width:150px;
+      height:150px;
+      border:1px solid rgba(66,200,255,.6);
+      background:transparent;
+      box-shadow:
+        0 0 40px rgba(66,200,255,.18),
+        inset 0 0 30px rgba(66,200,255,.12);
+    }
+
+    .lab-card:nth-child(4) .lab-orb{
+      background:
+        repeating-radial-gradient(
+          circle,
+          rgba(255,255,255,.9) 0 2px,
+          transparent 2px 12px
+        );
+      opacity:.5;
+    }
+
+    @keyframes labFloat{
+      0%,100%{
+        transform:translateX(-50%) translateY(0);
+      }
+      50%{
+        transform:translateX(-50%) translateY(-16px);
+      }
+    }
+
+    /* =========================
+       TECH
+    ========================= */
+
+    .tech{
+      padding:125px 0;
+      background:#fff;
+      border-bottom:1px solid var(--line);
+    }
+
+    .tech-list{
+      margin-top:55px;
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+    }
+
+    .tech-pill{
+      padding:12px 17px;
+      border:1px solid var(--line);
+      border-radius:100px;
+      font-family:"DM Mono",monospace;
+      font-size:10px;
+      color:#596073;
+      transition:.35s var(--ease);
+    }
+
+    .tech-pill:hover{
+      background:var(--ink);
+      color:#fff;
+      border-color:var(--ink);
+      transform:translateY(-2px);
+    }
+
+    /* =========================
+       CONTACT
+    ========================= */
+
+    .contact{
+      padding:180px 0 150px;
+      background:
+        radial-gradient(
+          circle at 80% 50%,
+          rgba(66,200,255,.16),
+          transparent 25%
+        ),
+        radial-gradient(
+          circle at 65% 30%,
+          rgba(255,184,217,.16),
+          transparent 22%
+        ),
+        var(--paper);
+    }
+
+    .contact-title{
+      font-size:clamp(70px,12vw,180px);
+      line-height:.78;
+      letter-spacing:-.085em;
+      font-weight:800;
+    }
+
+    .contact-copy{
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-end;
+      gap:30px;
+      margin-top:65px;
+    }
+
+    .contact-copy p{
+      max-width:520px;
+      color:var(--muted);
+      font-size:16px;
+      line-height:1.8;
+    }
+
+    .contact-link{
+      position:relative;
+      font-size:clamp(20px,3vw,38px);
+      font-weight:700;
+      letter-spacing:-.04em;
+      padding-bottom:8px;
+    }
+
+    .contact-link::after{
+      content:"";
+      position:absolute;
+      left:0;
+      right:0;
+      bottom:0;
+      height:2px;
+      background:
+        linear-gradient(
+          90deg,
+          var(--blue),
+          var(--sky),
+          var(--pink-strong)
+        );
+      transform-origin:left;
+      transition:transform .5s var(--ease);
+    }
+
+    .contact-link:hover::after{
+      transform:scaleX(.35);
+    }
+
+    /* =========================
+       FOOTER
+    ========================= */
+
+    footer{
+      padding:35px var(--side);
+      background:var(--navy);
+      color:#fff;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:30px;
+      font-family:"DM Mono",monospace;
+      font-size:9px;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+    }
+
+    .footer-brand{
+      display:flex;
+      align-items:center;
+      gap:9px;
+      font-family:"Manrope",sans-serif;
+      font-weight:800;
+      letter-spacing:-.04em;
+      font-size:15px;
+    }
+
+    .footer-mark{
+      width:28px;
+      height:24px;
+    }
+
+    /* =========================
+       FLOATING STORY
+    ========================= */
+
+    .story-widget{
+      position:fixed;
+      right:22px;
+      bottom:22px;
+      width:350px;
+      height:230px;
+      z-index:3000;
+      overflow:hidden;
+      border-radius:14px;
+      color:#fff;
+      background:rgba(16,21,43,.92);
+      border:1px solid rgba(255,255,255,.15);
+      box-shadow:
+        0 20px 60px rgba(16,21,43,.25),
+        0 5px 25px rgba(49,92,255,.12);
+      backdrop-filter:blur(20px);
+      -webkit-backdrop-filter:blur(20px);
+      opacity:0;
+      visibility:hidden;
+      transform:translateY(25px) scale(.97);
+      transition:
+        opacity .45s var(--ease),
+        visibility .45s,
+        transform .45s var(--ease);
+    }
+
+    .story-widget.active{
+      opacity:1;
+      visibility:visible;
+      transform:none;
+    }
+
+    .story-close{
+      position:absolute;
+      right:12px;
+      top:10px;
+      z-index:10;
+      width:28px;
+      height:28px;
+      border:1px solid rgba(255,255,255,.22);
+      border-radius:50%;
+      background:rgba(0,0,0,.18);
+      color:#fff;
+      cursor:pointer;
+      font-size:15px;
+      line-height:1;
+      transition:.3s;
+    }
+
+    .story-close:hover{
+      background:#fff;
+      color:var(--navy);
+    }
+
+    .story-count{
+      position:absolute;
+      right:52px;
+      top:17px;
+      z-index:10;
+      font-family:"DM Mono",monospace;
+      font-size:8px;
+      color:rgba(255,255,255,.55);
+    }
+
+    .story-stage{
+      position:absolute;
+      inset:0;
+    }
+
+    .story-svg{
+      width:100%;
+      height:100%;
+      display:block;
+    }
+
+    .story-scene{
+      opacity:0;
+      transform-origin:center;
+      transition:
+        opacity .5s var(--ease),
+        transform .5s var(--ease);
+    }
+
+    .story-scene.active{
+      opacity:1;
+    }
+
+    .story-caption{
+      position:absolute;
+      left:18px;
+      right:18px;
+      bottom:44px;
+      z-index:5;
+      font-size:12px;
+      line-height:1.35;
+      color:rgba(255,255,255,.88);
+      max-width:245px;
+    }
+
+    .story-caption strong{
+      display:block;
+      font-family:"DM Mono",monospace;
+      text-transform:uppercase;
+      letter-spacing:.08em;
+      font-size:8px;
+      color:var(--sky);
+      margin-bottom:5px;
+    }
+
+    .story-enter{
+      position:absolute;
+      right:18px;
+      bottom:17px;
+      z-index:5;
+      border:0;
+      background:none;
+      color:#fff;
+      cursor:pointer;
+      font-family:"DM Mono",monospace;
+      font-size:9px;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+      padding:0;
+    }
+
+    .story-enter span{
+      color:var(--sky);
+      margin-left:5px;
+      transition:.3s;
+    }
+
+    .story-enter:hover span{
+      margin-left:10px;
+    }
+
+    .story-reopen{
+      position:fixed;
+      right:22px;
+      bottom:22px;
+      z-index:2999;
+      width:48px;
+      height:48px;
+      border-radius:50%;
+      border:1px solid var(--line);
+      background:#fff;
+      color:var(--blue);
+      cursor:pointer;
+      box-shadow:0 12px 35px rgba(16,21,43,.12);
+      opacity:0;
+      visibility:hidden;
+      transform:scale(.7);
+      transition:.4s var(--ease);
+    }
+
+    .story-reopen.visible{
+      opacity:1;
+      visibility:visible;
+      transform:scale(1);
+    }
+
+    /* =========================
+       RESPONSIVE
+    ========================= */
+
+    @media(max-width:1000px){
+
+      .hero-orb{
+        opacity:.45;
+        right:-15vw;
+      }
+
+      .manifesto-grid{
+        grid-template-columns:1fr;
+        gap:55px;
+      }
+
+      .work-grid{
+        grid-template-columns:1fr;
+      }
+
+      .work-card,
+      .work-card:nth-child(2),
+      .work-card:nth-child(3),
+      .work-card:nth-child(4){
+        min-height:460px;
+        transform:none;
+      }
+
+      .work-card:hover,
+      .work-card:nth-child(2):hover,
+      .work-card:nth-child(4):hover{
+        transform:translateY(-6px);
+      }
+
+      .lab-grid{
+        grid-template-columns:repeat(2,1fr);
+      }
+
+      .cap-grid{
+        grid-template-columns:repeat(2,1fr);
+      }
+    }
+
+    @media(max-width:800px){
+
+      :root{
+        --header:72px;
+      }
+
+      nav{
+        gap:16px;
+      }
+
+      nav a:not(.nav-cta){
+        display:none;
+      }
+
+      .hero{
+        min-height:auto;
+        padding-top:150px;
+        padding-bottom:90px;
+      }
+
+      .hero-bottom{
+        align-items:flex-start;
+        flex-direction:column;
+      }
+
+      .hero-orb{
+        width:75vw;
+        right:-35vw;
+        top:55%;
+        opacity:.28;
+      }
+
+      .thought{
+        padding:110px 0;
+      }
+
+      .manifesto,
+      .work,
+      .capabilities,
+      .lab{
+        padding:110px 0;
+      }
+
+      .showreel{
+        padding:90px 0;
+      }
+
+      .showreel-frame{
+        min-height:470px;
+      }
+
+      .section-head{
+        align-items:flex-start;
+        flex-direction:column;
+      }
+
+      .cap-grid{
+        grid-template-columns:1fr;
+      }
+
+      .cap{
+        min-height:220px;
+      }
+
+      .lab-grid{
+        grid-template-columns:1fr;
+      }
+
+      .lab-card{
+        min-height:320px;
+      }
+
+      .pause{
+        min-height:65vh;
+      }
+
+      .contact{
+        padding:120px 0 100px;
+      }
+
+      .contact-copy{
+        flex-direction:column;
+        align-items:flex-start;
+      }
+    }
+
+    @media(max-width:600px){
+
+      :root{
+        --side:20px;
+      }
+
+      .brand-word{
+        font-size:16px;
+      }
+
+      .brand-mark{
+        width:39px;
+        height:32px;
+      }
+
+      .brand-eight{
+        width:19px;
+        height:19px;
+      }
+
+      .hero h1{
+        font-size:clamp(55px,15vw,90px);
+      }
+
+      .hero-bottom{
+        margin-top:42px;
+      }
+
+      .thought-text{
+        font-size:clamp(38px,11vw,65px);
+      }
+
+      .manifesto-item h3{
+        font-size:27px;
+      }
+
+      .showreel-frame{
+        min-height:400px;
+      }
+
+      .reel-core{
+        width:90px;
+        height:90px;
+      }
+
+      .work-card,
+      .work-card:nth-child(2),
+      .work-card:nth-child(3),
+      .work-card:nth-child(4){
+        min-height:380px;
+      }
+
+      .story-widget{
+        width:calc(100vw - 28px);
+        right:14px;
+        bottom:14px;
+        height:215px;
+      }
+
+      .story-reopen{
+        right:14px;
+        bottom:14px;
+      }
+
+      footer{
+        align-items:flex-start;
+        flex-direction:column;
+      }
+    }
+
+    @media(max-width:420px){
+
+      .hero h1{
+        font-size:54px;
+      }
+
+      .section-title{
+        font-size:55px;
+      }
+
+      .contact-title{
+        font-size:72px;
+      }
+
+      .story-widget{
+        height:205px;
+      }
+    }
+
+    @media(prefers-reduced-motion:reduce){
+
+      html{
+        scroll-behavior:auto;
+      }
+
+      *,
+      *::before,
+      *::after{
+        animation-duration:.001ms !important;
+        animation-iteration-count:1 !important;
+        transition-duration:.001ms !important;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- =========================
+       HEADER
+  ========================= -->
+
+  <header>
+
+    <a href="#" class="brand" aria-label="PRIX8">
+
+      <svg
+        class="brand-mark"
+        viewBox="0 0 70 52"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        aria-hidden="true"
+      >
+        <defs>
+          <linearGradient id="brandGradient" x1="4" y1="4" x2="66" y2="48">
+            <stop offset="0%" stop-color="#42c8ff"/>
+            <stop offset="38%" stop-color="#315cff"/>
+            <stop offset="72%" stop-color="#b9a7ff"/>
+            <stop offset="100%" stop-color="#ff8fc4"/>
+          </linearGradient>
+        </defs>
+
+        <!-- P -->
+        <path
+          d="M8 43V9H27C34.5 9 39 12.7 39 19.1C39 25.5 34.5 29.2 27 29.2H16"
+          stroke="url(#brandGradient)"
+          stroke-width="6"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+
+        <!-- Orbit / 8 -->
+        <path
+          d="M43 18.5C43 13.2 47.7 9 53.5 9C59.3 9 64 13.2 64 18.5C64 23.8 59.3 26 53.5 26C47.7 26 43 28.2 43 33.5C43 38.8 47.7 43 53.5 43C59.3 43 64 38.8 64 33.5C64 28.2 59.3 26 53.5 26"
+          stroke="url(#brandGradient)"
+          stroke-width="5"
+          stroke-linecap="round"
+        />
+
+        <!-- Cut -->
+        <path
+          d="M40 8L66 44"
+          stroke="rgba(250,252,255,.95)"
+          stroke-width="3"
+          stroke-linecap="round"
+          opacity=".7"
+        />
+      </svg>
+
+      <span class="brand-word">PRIX</span>
+      <span class="brand-eight">8</span>
+
+    </a>
+
+    <nav>
+      <a href="#work">Work</a>
+      <a href="#capabilities">Capabilities</a>
+      <a href="#lab">Lab</a>
+      <a href="#contact" class="nav-cta">Contact Us</a>
+    </nav>
+
+  </header>
+
+
+  <!-- =========================
+       HERO
+  ========================= -->
+
+  <main>
+
+    <section class="hero">
+
+      <div class="hero-inner">
+
+        <div class="hero-copy">
+
+          <div class="eyebrow reveal">
+            Visual Effects / CGI / Creative Technology
+          </div>
+
+          <h1 class="reveal">
+            <span>WE CREATE</span>
+            <span>WORLDS</span>
+            <span>BEYOND</span>
+            <span class="gradient-word">REALITY.</span>
+          </h1>
+
+          <div class="hero-bottom reveal">
+
+            <p class="hero-description">
+              PRIX8 is a visual effects and creative technology studio
+              building cinematic worlds, impossible images and experiences
+              that exist somewhere between reality and imagination.
+            </p>
+
+            <div class="hero-scroll">
+              <span class="scroll-line"></span>
+              Scroll to explore
+            </div>
+
+          </div>
+
+        </div>
+
+        <div class="hero-orb"></div>
+
+      </div>
+
+    </section>
+
+
+    <!-- =========================
+         THOUGHT
+    ========================= -->
+
+    <section class="thought">
+
+      <div class="thought-inner">
+
+        <div class="eyebrow reveal">
+          Our point of view
+        </div>
+
+        <div class="thought-text reveal">
+          Reality is only the
+          <em>starting point.</em>
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- =========================
+         MANIFESTO
+    ========================= -->
+
+    <section class="manifesto">
+
+      <div class="manifesto-grid">
+
+        <div>
+          <div class="eyebrow manifesto-label reveal">
+            Manifesto
+          </div>
+        </div>
+
+        <div class="manifesto-list">
+
+          <div class="manifesto-item reveal">
+            <div class="manifesto-number">01</div>
+            <h3>
+              Don't make something look real.
+              Make people question whether it was.
+            </h3>
+          </div>
+
+          <div class="manifesto-item reveal">
+            <div class="manifesto-number">02</div>
+            <h3>
+              Technology is not the idea.
+              It is what allows the idea to exist.
+            </h3>
+          </div>
+
+          <div class="manifesto-item reveal">
+            <div class="manifesto-number">03</div>
+            <h3>
+              The best visual effect is the one
+              people remember without knowing why.
+            </h3>
+          </div>
+
+          <div class="manifesto-item reveal">
+            <div class="manifesto-number">04</div>
+            <h3>
+              Start with the impossible.
+              Then figure out how to build it.
+            </h3>
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- =========================
+         SHOWREEL
+    ========================= -->
+
+    <section class="showreel">
+
+      <div class="container">
+
+        <div class="eyebrow reveal">
+          Selected showreel
+        </div>
+
+        <div class="showreel-frame reveal">
+
+          <div class="reel-core" id="reelButton">
+            <div class="play-icon"></div>
+          </div>
+
+          <div class="reel-label">
+            PRIX8 / SHOWREEL
+          </div>
+
+          <div class="reel-time">
+            01:42
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- =========================
+         WORK
+    ========================= -->
+
+    <section class="work" id="work">
+
+      <div class="container">
+
+        <div class="section-head">
+
+          <div>
+            <div class="eyebrow reveal">
+              Selected work
+            </div>
+
+            <h2 class="section-title reveal">
+              WORK
+            </h2>
+          </div>
+
+          <p class="section-note reveal">
+            A collection of visual experiments, campaigns,
+            cinematic worlds and impossible images.
+          </p>
+
+        </div>
+
+        <div class="work-grid">
+
+          <article class="work-card reveal">
+
+            <div class="work-visual nebula"></div>
+
+            <div class="work-overlay">
+              <div class="work-meta">
+                CGI / WORLD BUILDING
+              </div>
+              <div class="work-title">
+                NEBULA
+              </div>
+            </div>
+
+          </article>
+
+
+          <article class="work-card reveal">
+
+            <div class="work-visual flux"></div>
+
+            <div class="work-overlay">
+              <div class="work-meta">
+                MOTION / DESIGN
+              </div>
+              <div class="work-title">
+                FLUX
+              </div>
+            </div>
+
+          </article>
+
+
+          <article class="work-card reveal">
+
+            <div class="work-visual dreamstate"></div>
+
+            <div class="work-overlay">
+              <div class="work-meta">
+                VFX / CGI
+              </div>
+              <div class="work-title">
+                DREAMSTATE
+              </div>
+            </div>
+
+          </article>
+
+
+          <article class="work-card reveal">
+
+            <div class="work-visual zero"></div>
+
+            <div class="work-overlay">
+              <div class="work-meta">
+                EXPERIMENTAL / FILM
+              </div>
+              <div class="work-title">
+                ZERO
+              </div>
+            </div>
+
+          </article>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- =========================
+         CAPABILITIES
+    ========================= -->
+
+    <section class="capabilities" id="capabilities">
+
+      <div class="container">
+
+        <div class="eyebrow reveal">
+          What we do
+        </div>
+
+        <div class="cap-grid">
+
+          <article class="cap reveal">
+            <div class="cap-number">01</div>
+            <h3>Visual Effects</h3>
+            <p>
+              Cinematic compositing, simulations,
+              environments and invisible effects.
+            </p>
+          </article>
+
+          <article class="cap reveal">
+            <div class="cap-number">02</div>
+            <h3>CGI & 3D</h3>
+            <p>
+              Product imagery, creatures, environments,
+              characters and photoreal worlds.
+            </p>
+          </article>
+
+          <article class="cap reveal">
+            <div class="cap-number">03</div>
+            <h3>Motion Design</h3>
+            <p>
+              Abstract systems, title sequences,
+              identities and kinetic visual language.
+            </p>
+          </article>
+
+          <article class="cap reveal">
+            <div class="cap-number">04</div>
+            <h3>Realtime</h3>
+            <p>
+              Interactive environments and realtime
+              cinematic experiences.
+            </p>
+          </article>
+
+          <article class="cap reveal">
+            <div class="cap-number">05</div>
+            <h3>AI + Creative Tech</h3>
+            <p>
+              Generative workflows, procedural systems
+              and experimental image making.
+            </p>
+          </article>
+
+          <article class="cap reveal">
+            <div class="cap-number">06</div>
+            <h3>Post Production</h3>
+            <p>
+              Finishing, color, cleanup, compositing
+              and final image development.
+            </p>
+          </article>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- =========================
+         PAUSE
+    ========================= -->
+
+    <section class="pause">
+
+      <div class="container">
+
+        <div class="pause-text reveal">
+          What if the thing nobody has seen before
+          becomes your next <span>image?</span>
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- =========================
+         LAB
+    ========================= -->
+
+    <section class="lab" id="lab">
+
+      <div class="container">
+
+        <div class="eyebrow reveal">
+          PRIX8 LAB
+        </div>
+
+        <div class="section-head" style="margin-top:28px">
+
+          <h2 class="section-title reveal">
+            EXPERIMENT
+          </h2>
+
+          <p class="section-note reveal" style="color:rgba(255,255,255,.48)">
+            We use experimentation as a creative tool.
+            Some ideas become projects. Others become
+            the technology behind the next one.
+          </p>
+
+        </div>
+
+        <div class="lab-grid">
+
+          <article class="lab-card reveal">
+            <div class="lab-index">LAB / 01</div>
+            <div class="lab-orb"></div>
+            <h3>Procedural Worlds</h3>
+          </article>
+
+          <article class="lab-card reveal">
+            <div class="lab-index">LAB / 02</div>
+            <div class="lab-orb"></div>
+            <h3>Generative Image</h3>
+          </article>
+
+          <article class="lab-card reveal">
+            <div class="lab-index">LAB / 03</div>
+            <div class="lab-orb"></div>
+            <h3>Realtime</h3>
+          </article>
+
+          <article class="lab-card reveal">
+            <div class="lab-index">LAB / 04</div>
+            <div class="lab-orb"></div>
+            <h3>New Materials</h3>
+          </article>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- =========================
+         TECHNOLOGY
+    ========================= -->
+
+    <section class="tech">
+
+      <div class="container">
+
+        <div class="eyebrow reveal">
+          Technology
+        </div>
+
+        <div class="tech-list reveal">
+
+          <span class="tech-pill">Unreal Engine</span>
+          <span class="tech-pill">Houdini</span>
+          <span class="tech-pill">Blender</span>
+          <span class="tech-pill">Maya</span>
+          <span class="tech-pill">Nuke</span>
+          <span class="tech-pill">Cinema 4D</span>
+          <span class="tech-pill">Redshift</span>
+          <span class="tech-pill">Octane</span>
+          <span class="tech-pill">After Effects</span>
+          <span class="tech-pill">Generative AI</span>
+          <span class="tech-pill">Realtime</span>
+          <span class="tech-pill">Procedural Design</span>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- =========================
+         CONTACT
+    ========================= -->
+
+    <section class="contact" id="contact">
+
+      <div class="container">
+
+        <div class="eyebrow reveal">
+          Let's make something impossible
+        </div>
+
+        <h2 class="contact-title reveal">
+          HAVE<br>
+          AN IDEA?
+        </h2>
+
+        <div class="contact-copy reveal">
+
+          <p>
+            Tell us the thing that keeps coming back
+            into your head. The strange idea.
+            The impossible image. The world that
+            doesn't exist yet.
+          </p>
+
+          <a
+            href="mailto:hello@yourstudio.com"
+            class="contact-link"
+          >
+            hello@yourstudio.com
+          </a>
+
+        </div>
+
+      </div>
+
+    </section>
+
+  </main>
+
+
+  <!-- =========================
+       FOOTER
+  ========================= -->
+
+  <footer>
+
+    <div class="footer-brand">
+
+      <svg
+        class="footer-mark"
+        viewBox="0 0 70 52"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        aria-hidden="true"
+      >
+        <defs>
+          <linearGradient id="footerGradient" x1="4" y1="4" x2="66" y2="48">
+            <stop offset="0%" stop-color="#42c8ff"/>
+            <stop offset="38%" stop-color="#315cff"/>
+            <stop offset="72%" stop-color="#b9a7ff"/>
+            <stop offset="100%" stop-color="#ff8fc4"/>
+          </linearGradient>
+        </defs>
+
+        <path
+          d="M8 43V9H27C34.5 9 39 12.7 39 19.1C39 25.5 34.5 29.2 27 29.2H16"
+          stroke="url(#footerGradient)"
+          stroke-width="6"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+
+        <path
+          d="M43 18.5C43 13.2 47.7 9 53.5 9C59.3 9 64 13.2 64 18.5C64 23.8 59.3 26 53.5 26C47.7 26 43 28.2 43 33.5C43 38.8 47.7 43 53.5 43C59.3 43 64 38.8 64 33.5C64 28.2 59.3 26 53.5 26"
+          stroke="url(#footerGradient)"
+          stroke-width="5"
+          stroke-linecap="round"
+        />
+
+      </svg>
+
+      PRIX8®
+
+    </div>
+
+    <div>
+      HYDERABAD / INDIA / WORLDWIDE
+    </div>
+
+    <div>
+      © <span id="year"></span>
+    </div>
+
+  </footer>
+
+
+  <!-- =========================
+       FLOATING STORY
+  ========================= -->
+
+  <div class="story-widget" id="storyWidget">
+
+    <button
+      class="story-close"
+      id="storyClose"
+      aria-label="Close story"
+    >
+      ×
+    </button>
+
+    <div class="story-count">
+      <span id="storyCurrent">01</span> / 09
+    </div>
+
+    <div class="story-stage">
+
+      <svg
+        class="story-svg"
+        viewBox="0 0 350 230"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+
+        <defs>
+
+          <linearGradient
+            id="storyGradient"
+            x1="35"
+            y1="20"
+            x2="310"
+            y2="205"
+            gradientUnits="userSpaceOnUse"
+          >
+            <stop offset="0%" stop-color="#42c8ff"/>
+            <stop offset="40%" stop-color="#315cff"/>
+            <stop offset="70%" stop-color="#b9a7ff"/>
+            <stop offset="100%" stop-color="#ff8fc4"/>
+          </linearGradient>
+
+          <filter id="storyGlow">
+            <feGaussianBlur stdDeviation="7"/>
+          </filter>
+
+        </defs>
+
+        <!-- SCENE 1 -->
+
+        <g class="story-scene" data-scene="idea">
+
+          <circle
+            cx="175"
+            cy="90"
+            r="28"
+            stroke="url(#storyGradient)"
+            stroke-width="2"
+          />
+
+          <circle
+            cx="175"
+            cy="90"
+            r="12"
+            fill="url(#storyGradient)"
+            opacity=".8"
+          />
+
+          <circle
+            cx="175"
+            cy="90"
+            r="38"
+            stroke="#42c8ff"
+            opacity=".15"
+          />
+
+          <path
+            d="M175 45V31M175 149V135M130 90H116M234 90H220"
+            stroke="#42c8ff"
+            opacity=".45"
+          />
+
+        </g>
+
+
+        <!-- SCENE 2 -->
+
+        <g class="story-scene" data-scene="form">
+
+          <rect
+            x="118"
+            y="52"
+            width="114"
+            height="78"
+            rx="7"
+            stroke="url(#storyGradient)"
+            stroke-width="2"
+          />
+
+          <path
+            d="M139 78H210M139 94H193M139 110H177"
+            stroke="rgba(255,255,255,.6)"
+            stroke-width="3"
+            stroke-linecap="round"
+          />
+
+          <circle
+            cx="145"
+            cy="63"
+            r="3"
+            fill="#42c8ff"
+          />
+
+        </g>
+
+
+        <!-- SCENE 3 -->
+
+        <g class="story-scene" data-scene="motion">
+
+          <circle
+            cx="175"
+            cy="91"
+            r="40"
+            stroke="url(#storyGradient)"
+            stroke-width="2"
+            stroke-dasharray="5 7"
+          />
+
+          <path
+            d="M122 126C151 104 169 102 198 82C215 70 230 62 244 55"
+            stroke="#42c8ff"
+            stroke-width="3"
+            stroke-linecap="round"
+          />
+
+          <circle
+            cx="244"
+            cy="55"
+            r="6"
+            fill="#ff8fc4"
+          />
+
+        </g>
+
+
+        <!-- SCENE 4 -->
+
+        <g class="story-scene" data-scene="transform">
+
+          <path
+            d="M113 115L150 70L175 110L202 58L239 115L175 144Z"
+            stroke="url(#storyGradient)"
+            stroke-width="2"
+            fill="rgba(49,92,255,.08)"
+          />
+
+          <path
+            d="M137 117L171 83L196 117"
+            stroke="#42c8ff"
+            opacity=".6"
+          />
+
+        </g>
+
+
+        <!-- SCENE 5 -->
+
+        <g class="story-scene" data-scene="world">
+
+          <circle
+            cx="175"
+            cy="93"
+            r="54"
+            stroke="url(#storyGradient)"
+            stroke-width="2"
+          />
+
+          <ellipse
+            cx="175"
+            cy="93"
+            rx="54"
+            ry="19"
+            stroke="#42c8ff"
+            opacity=".5"
+          />
+
+          <ellipse
+            cx="175"
+            cy="93"
+            rx="22"
+            ry="54"
+            stroke="#b9a7ff"
+            opacity=".45"
+          />
+
+          <circle
+            cx="158"
+            cy="76"
+            r="5"
+            fill="#fff"
+          />
+
+        </g>
+
+
+        <!-- SCENE 6 -->
+
+        <g class="story-scene" data-scene="reality">
+
+          <circle
+            cx="175"
+            cy="92"
+            r="43"
+            fill="url(#storyGradient)"
+            opacity=".15"
+            filter="url(#storyGlow)"
+          />
+
+          <circle
+            cx="175"
+            cy="92"
+            r="32"
+            stroke="url(#storyGradient)"
+            stroke-width="3"
+          />
+
+          <path
+            d="M160 92L171 103L192 78"
+            stroke="#fff"
+            stroke-width="3"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
+
+        </g>
+
+
+        <!-- SCENE 7 -->
+
+        <g class="story-scene" data-scene="beyond">
+
+          <circle
+            cx="175"
+            cy="93"
+            r="25"
+            stroke="#42c8ff"
+            stroke-width="2"
+          />
+
+          <circle
+            cx="175"
+            cy="93"
+            r="52"
+            stroke="#b9a7ff"
+            stroke-width="1"
+            stroke-dasharray="4 7"
+          />
+
+          <circle
+            cx="175"
+            cy="93"
+            r="76"
+            stroke="#ff8fc4"
+            stroke-width="1"
+            opacity=".5"
+          />
+
+          <circle
+            cx="250"
+            cy="93"
+            r="4"
+            fill="#42c8ff"
+          />
+
+          <circle
+            cx="175"
+            cy="17"
+            r="4"
+            fill="#ff8fc4"
+          />
+
+        </g>
+
+
+        <!-- SCENE 8 -->
+
+        <g class="story-scene" data-scene="prix8">
+
+          <text
+            x="175"
+            y="92"
+            text-anchor="middle"
+            fill="url(#storyGradient)"
+            font-family="Manrope, sans-serif"
+            font-size="31"
+            font-weight="800"
+            letter-spacing="-2"
+          >
+            PRIX8
+          </text>
+
+          <path
+            d="M118 108H232"
+            stroke="rgba(255,255,255,.18)"
+          />
+
+          <text
+            x="175"
+            y="128"
+            text-anchor="middle"
+            fill="rgba(255,255,255,.5)"
+            font-family="DM Mono, monospace"
+            font-size="7"
+            letter-spacing="2"
+          >
+            VISUAL WORLDS / BEYOND REALITY
+          </text>
+
+        </g>
+
+
+        <!-- SCENE 9 -->
+
+        <g class="story-scene" data-scene="enter">
+
+          <circle
+            cx="175"
+            cy="93"
+            r="58"
+            stroke="url(#storyGradient)"
+            stroke-width="1"
+            opacity=".5"
+          />
+
+          <circle
+            cx="175"
+            cy="93"
+            r="38"
+            fill="url(#storyGradient)"
+            opacity=".13"
+          />
+
+          <path
+            d="M155 93H197M187 83L197 93L187 103"
+            stroke="#fff"
+            stroke-width="3"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
+
+        </g>
+
+      </svg>
+
+    </div>
+
+    <div class="story-caption">
+
+      <strong id="storyLabel">
+        IDEA / 01
+      </strong>
+
+      <span id="storyText">
+        An idea begins.
+      </span>
+
+    </div>
+
+    <button class="story-enter" id="storyEnter">
+      Enter the world
+      <span>→</span>
+    </button>
+
+  </div>
+
+
+  <button
+    class="story-reopen"
+    id="storyReopen"
+    aria-label="Open story"
+  >
+    ✦
+  </button>
+
+
+  <!-- =========================
+       JAVASCRIPT
+  ========================= -->
+
+  <script>
+
+    /* YEAR */
+
+    document.getElementById("year").textContent =
+      new Date().getFullYear();
+
+
+    /* REVEAL */
+
+    const revealElements =
+      document.querySelectorAll(".reveal");
+
+    const revealObserver =
+      new IntersectionObserver(
+        entries => {
+
+          entries.forEach(entry => {
+
+            if(entry.isIntersecting){
+
+              entry.target.classList.add("visible");
+
+              revealObserver.unobserve(entry.target);
+
+            }
+
+          });
+
+        },
+        {
+          threshold:.08
+        }
+      );
+
+    revealElements.forEach(el =>
+      revealObserver.observe(el)
+    );
+
+
+    /* REEL */
+
+    const reelButton =
+      document.getElementById("reelButton");
+
+    let reelPulse = false;
+
+    reelButton.addEventListener("click", () => {
+
+      reelPulse = !reelPulse;
+
+      reelButton.innerHTML =
+        reelPulse
+          ? '<div style="width:14px;height:18px;border-left:3px solid #fff;border-right:3px solid #fff"></div>'
+          : '<div class="play-icon"></div>';
+
+    });
+
+
+    /* STORY */
+
+    const storyWidget =
+      document.getElementById("storyWidget");
+
+    const storyClose =
+      document.getElementById("storyClose");
+
+    const storyReopen =
+      document.getElementById("storyReopen");
+
+    const storyCurrent =
+      document.getElementById("storyCurrent");
+
+    const storyLabel =
+      document.getElementById("storyLabel");
+
+    const storyText =
+      document.getElementById("storyText");
+
+    const storyEnter =
+      document.getElementById("storyEnter");
+
+    const scenes =
+      document.querySelectorAll(".story-scene");
+
+    const storyData = [
+
+      {
+        id:"idea",
+        label:"IDEA / 01",
+        text:"An idea begins."
+      },
+
+      {
+        id:"form",
+        label:"FORM / 02",
+        text:"Then it takes shape."
+      },
+
+      {
+        id:"motion",
+        label:"MOTION / 03",
+        text:"It starts moving."
+      },
+
+      {
+        id:"transform",
+        label:"TRANSFORM / 04",
+        text:"Then everything changes."
+      },
+
+      {
+        id:"world",
+        label:"WORLD / 05",
+        text:"A world begins to appear."
+      },
+
+      {
+        id:"reality",
+        label:"REALITY / 06",
+        text:"The impossible starts feeling real."
+      },
+
+      {
+        id:"beyond",
+        label:"BEYOND / 07",
+        text:"And reality becomes the limit."
+      },
+
+      {
+        id:"prix8",
+        label:"PRIX8 / 08",
+        text:"We turn ideas into visual worlds."
+      },
+
+      {
+        id:"enter",
+        label:"ENTER / 09",
+        text:"Enter the world."
+      }
+
+    ];
+
+
+    let storyClosed = false;
+
+
+    function updateStory(){
+
+      const maxScroll =
+        document.documentElement.scrollHeight -
+        window.innerHeight;
+
+      if(maxScroll <= 0) return;
+
+      const progress =
+        window.scrollY / maxScroll;
+
+      let index =
+        Math.floor(progress * storyData.length);
+
+      index =
+        Math.max(
+          0,
+          Math.min(
+            storyData.length - 1,
+            index
+          )
+        );
+
+      const current =
+        storyData[index];
+
+      scenes.forEach(scene => {
+
+        scene.classList.toggle(
+          "active",
+          scene.dataset.scene === current.id
+        );
+
+      });
+
+      storyCurrent.textContent =
+        String(index + 1).padStart(2,"0");
+
+      storyLabel.textContent =
+        current.label;
+
+      storyText.textContent =
+        current.text;
+
+      if(
+        progress > .025 &&
+        progress < .998 &&
+        !storyClosed
+      ){
+
+        storyWidget.classList.add("active");
+
+      }
+
+    }
+
+
+    window.addEventListener(
+      "scroll",
+      updateStory,
+      {passive:true}
+    );
+
+
+    storyClose.addEventListener(
+      "click",
+      () => {
+
+        storyClosed = true;
+
+        storyWidget.classList.remove("active");
+
+        storyReopen.classList.add("visible");
+
+      }
+    );
+
+
+    storyReopen.addEventListener(
+      "click",
+      () => {
+
+        storyClosed = false;
+
+        storyReopen.classList.remove("visible");
+
+        updateStory();
+
+      }
+    );
+
+
+    storyEnter.addEventListener(
+      "click",
+      () => {
+
+        document
+          .getElementById("contact")
+          .scrollIntoView({
+            behavior:"smooth"
+          });
+
+      }
+    );
+
+
+    /* HERO POINTER */
+
+    const hero =
+      document.querySelector(".hero");
+
+    const orb =
+      document.querySelector(".hero-orb");
+
+
+    hero.addEventListener(
+      "pointermove",
+      event => {
+
+        if(
+          window.matchMedia(
+            "(prefers-reduced-motion: reduce)"
+          ).matches
+        ) return;
+
+        const rect =
+          hero.getBoundingClientRect();
+
+        const x =
+          (event.clientX - rect.left) /
+          rect.width -
+          .5;
+
+        const y =
+          (event.clientY - rect.top) /
+          rect.height -
+          .5;
+
+        orb.style.marginLeft =
+          `${x * 28}px`;
+
+        orb.style.marginTop =
+          `${y * 18}px`;
+
+      }
+    );
+
+
+    /* WORK CARD TILT */
+
+    const workCards =
+      document.querySelectorAll(".work-card");
+
+
+    workCards.forEach(card => {
+
+      card.addEventListener(
+        "pointermove",
+        event => {
+
+          if(
+            window.matchMedia(
+              "(max-width: 800px)"
+            ).matches
+          ) return;
+
+          const rect =
+            card.getBoundingClientRect();
+
+          const x =
+            event.clientX - rect.left;
+
+          const y =
+            event.clientY - rect.top;
+
+          const rotateY =
+            ((x / rect.width) - .5) * 3;
+
+          const rotateX =
+            ((y / rect.height) - .5) * -3;
+
+          card.style.transform =
+            `translateY(-4px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+
+        }
+      );
+
+
+      card.addEventListener(
+        "pointerleave",
+        () => {
+
+          card.style.transform = "";
+
+        }
+      );
+
+    });
+
+
+    /* INITIAL STORY */
+
+    updateStory();
+
+  </script>
+
+</body>
+</html>
